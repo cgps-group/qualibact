@@ -1,0 +1,8 @@
+metric,FINAL_lower,FINAL_upper,WARN_lower,WARN_upper,source
+N50,19000,,23000,,computed
+no_of_contigs,,310,,270,computed
+GC_Content,51.05,52.15,51.42,52.08,computed
+Completeness,97,,99,,computed
+Contamination,,3,,1,computed
+Total_Coding_Sequences,1900,2500,1900,2200,computed
+Genome_Size,2000000,2300000,2000000,2300000,pinned

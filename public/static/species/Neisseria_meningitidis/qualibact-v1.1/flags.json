@@ -1,0 +1,67 @@
+{
+  "species": "Neisseria meningitidis",
+  "severity": "warn",
+  "genome_count": 31977,
+  "low_count_flag": null,
+  "quality_signals": {
+    "frac_incomplete": {
+      "fraction": 0.0,
+      "count": 0,
+      "n": 31977,
+      "threshold_completeness_lt": 95.0,
+      "flag": null
+    },
+    "frac_short_genome": {
+      "fraction": 0.0,
+      "count": 0,
+      "n": 31977,
+      "median_genome_size": 2126309,
+      "threshold_fraction_of_median": 0.7,
+      "flag": null
+    },
+    "frac_oversized_genome": {
+      "fraction": 0.0,
+      "count": 0,
+      "n": 31977,
+      "median_genome_size": 2126309,
+      "threshold_ratio_of_median": 2.0,
+      "flag": null
+    },
+    "frac_high_contamination": {
+      "fraction": 0.0,
+      "count": 0,
+      "n": 31977,
+      "threshold_contamination_gt": 5.0,
+      "max_observed": 0.45,
+      "flag": null
+    },
+    "max_contamination_over_100": {
+      "fraction": 0.0,
+      "count": 0,
+      "n": 31977,
+      "max_observed": 0.45,
+      "interpretation": "Contamination > 100 is impossible under standard CheckM2 scoring; indicates co-assembly of multiple isolates in the source samples.",
+      "flag": null
+    },
+    "wide_gc_range": {
+      "warn_lower": 51.43,
+      "warn_upper": 52.07,
+      "range_pct": 0.64,
+      "threshold_range_pct_gt": 5.0,
+      "flag": null
+    },
+    "final_bound_dragged": {
+      "metrics_dragged": [
+        {
+          "metric": "Contamination",
+          "warn_upper": 0.07,
+          "final_upper": 2.47,
+          "ratio": 35.29
+        }
+      ],
+      "threshold_ratio_gt": 10.0,
+      "interpretation": "FINAL band is dragged far beyond the species WARN band by a small number of extreme outliers (either in the species data that survived IsolationForest, or in the RefSeq reference set). Use the WARN band as the practical threshold for the listed metrics \u2014 the FINAL band is dictated by outliers, not the bulk of the species's distribution.",
+      "flag": "warn"
+    }
+  }
+}

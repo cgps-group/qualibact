@@ -11,6 +11,7 @@ import SchemeIntroBlock from '@/components/SchemeIntroBlock';
 import AttributionBlock from '@/components/AttributionBlock';
 import EngineFlagsBanner from '@/components/EngineFlagsBanner';
 import { staticUrl } from '@/lib/static-url';
+import { gcStdInPercentagePoints, gcValueInPercent, summaryNumber } from '@/lib/metric-display';
 import ThresholdTable, { type ThresholdRow as TableRow } from './ThresholdTable';
 
 interface Props {
@@ -228,20 +229,21 @@ export default async function SchemeDetails({ species, version }: Props) {
           const rawMetric = (cells[iMetric] || '').trim();
           if (!rawMetric) continue;
           const metric = METRIC_ALIASES[rawMetric] ?? rawMetric;
-          let median = Number(cells[iMedian]);
-          let q1 = Number(cells[iQ1]);
-          let q3 = Number(cells[iQ3]);
-          const count = iCount >= 0 ? Number(cells[iCount]) : NaN;
-          let myLower = iMyLower >= 0 ? Number(cells[iMyLower]) : NaN;
-          let myUpper = iMyUpper >= 0 ? Number(cells[iMyUpper]) : NaN;
-          let warnLowerRaw = iWarnLower >= 0 ? Number(cells[iWarnLower]) : NaN;
-          let warnUpperRaw = iWarnUpper >= 0 ? Number(cells[iWarnUpper]) : NaN;
+          let median = summaryNumber(cells[iMedian]);
+          let q1 = summaryNumber(cells[iQ1]);
+          let q3 = summaryNumber(cells[iQ3]);
+          const sourceCentre = median;
+          const count = iCount >= 0 ? summaryNumber(cells[iCount]) : NaN;
+          let myLower = iMyLower >= 0 ? summaryNumber(cells[iMyLower]) : NaN;
+          let myUpper = iMyUpper >= 0 ? summaryNumber(cells[iMyUpper]) : NaN;
+          let warnLowerRaw = iWarnLower >= 0 ? summaryNumber(cells[iWarnLower]) : NaN;
+          let warnUpperRaw = iWarnUpper >= 0 ? summaryNumber(cells[iWarnUpper]) : NaN;
           // Engine output stores GC_Content inconsistently — sometimes as a
           // fraction (0–1), sometimes as a percentage (0–100), and sometimes
           // mixed within a single row (e.g. FINAL_LOWER=0.3009 alongside
           // FINAL_UPPER=31). Normalise each value individually rather than at
           // row level.
-          const toPct = (n: number) => (metric === 'GC_Content' && Number.isFinite(n) && Math.abs(n) <= 1.5) ? n * 100 : n;
+          const toPct = (n: number) => gcValueInPercent(metric, n);
           median = toPct(median);
           q1 = toPct(q1);
           q3 = toPct(q3);
@@ -252,14 +254,13 @@ export default async function SchemeDetails({ species, version }: Props) {
           // Extra summary stats — used to render the collapsed
           // "Summary statistics" table inside MetricsSummaryCard.
           const distribution = iDistribution >= 0 ? (cells[iDistribution] || '').trim() || null : null;
-          let mean = iMean >= 0 ? Number(cells[iMean]) : NaN;
-          const std = iStd >= 0 ? Number(cells[iStd]) : NaN;
-          let min = iMin >= 0 ? Number(cells[iMin]) : NaN;
-          let max = iMax >= 0 ? Number(cells[iMax]) : NaN;
+          let mean = iMean >= 0 ? summaryNumber(cells[iMean]) : NaN;
+          const std = gcStdInPercentagePoints(metric, iStd >= 0 ? summaryNumber(cells[iStd]) : NaN, sourceCentre);
+          let min = iMin >= 0 ? summaryNumber(cells[iMin]) : NaN;
+          let max = iMax >= 0 ? summaryNumber(cells[iMax]) : NaN;
           if (Number.isFinite(mean)) mean = toPct(mean);
           if (Number.isFinite(min)) min = toPct(min);
           if (Number.isFinite(max)) max = toPct(max);
-          // std doesn't get GC unit-normalised (it's a spread, not a value)
 
           if (Number.isFinite(median) && Number.isFinite(q1) && Number.isFinite(q3)) {
             distByMetric.set(metric, {

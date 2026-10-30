@@ -5,11 +5,11 @@ generated_by: qualibact-to-nextjs
 
 QualiBact `qualibact-v1.1` thresholds for *Campylobacter coli*, derived from a curated reference set (98 ATB assemblies + 92 RefSeq references) rather than the full AllTheBacteria-2024-08 distribution used for [v1.0](./qualibact-v1.0/).
 
-Compared with v1.0, the tighter reference set pulls a number of bounds inward — most visibly:
+Compared with v1.0, the curated reference set changes several thresholds:
 
 - **N50 lower** raised from 25 kb (v1.0) to **31 kb** (v1.1).
 - **Contig-count upper** tightened from 180 (v1.0) to **120** (v1.1).
-- **GC content** narrowed: the v1.1 FINAL band is 30 – 32 % with WARN locked at 31 % (vs. 30.66 – 31.51 % FINAL / 30.96 – 31.43 % WARN in v1.0).
+- **GC content** has a wider FINAL band of 30 – 32 % and a narrower WARN band fixed at 31 % (vs. 30.66 – 31.51 % FINAL / 30.96 – 31.43 % WARN in v1.0).
 - **Total coding sequences (WARN upper)** tightened from 2100 to **2000**.
 - **Genome size (WARN upper)** tightened from 1.9 Mb to **1.8 Mb**.
 

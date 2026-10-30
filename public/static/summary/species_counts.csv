@@ -205,7 +205,7 @@ Neisseria bergeri,qualibact-v1.1,warn,110,110,0,108,10,14
 Neisseria flavescens,qualibact-v1.1,warn,114,111,3,109,11,9
 Neisseria gonorrhoeae,qualibact-v1.1,warn,53435,53163,272,49415,5376,2554
 Neisseria lactamica,qualibact-v1.1,info,1327,1323,4,1265,84,74
-Neisseria meningitidis,qualibact-v1.1,,32386,32259,127,,,
+Neisseria meningitidis,qualibact-v1.1,warn,32116,31977,139,30660,3240,1916
 Neisseria perflava,qualibact-v1.1,error,96,94,2,93,6,6
 Neisseria polysaccharea,qualibact-v1.1,warn,107,106,1,101,8,8
 Oenococcus oeni,qualibact-v1.0,warn,120,111,9,105,11,11
