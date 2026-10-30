@@ -48,10 +48,21 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Check published metric display
+        run: npm run test:metric-display
+
+      - name: Check warning threshold provenance
+        run: python3 scripts/test_warning_sources.py
+
       - name: Build (static export)
         env:
           CF_PAGES: '1'
         run: npm run build
+
+      - name: Audit all published metric limits and rendered tables
+        run: |
+          python3 scripts/audit-metric-consistency.py --self-test
+          python3 scripts/audit-metric-consistency.py
 
       - name: Audit internal links
         run: node scripts/audit-internal-links.mjs

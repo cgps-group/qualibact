@@ -1,0 +1,153 @@
+{
+  "recovered_at": "2026-10-30",
+  "canonical_latest_path": "/well/aanensen/users/rva470/qualibact-engine/runs/aggregated-2024-08-rev2/Neisseria_meningitidis",
+  "canonical_dates": "20 May 2026",
+  "canonical_non_refseq_derivation_count": 31977,
+  "canonical_refseq_count": 139,
+  "canonical_assessment_count": 35816,
+  "native_bounds": [
+    {
+      "metric": "N50",
+      "FINAL_lower": 19000.0,
+      "FINAL_upper": null,
+      "WARN_lower": 23000.0,
+      "WARN_upper": null,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "no_of_contigs",
+      "FINAL_lower": null,
+      "FINAL_upper": 310.0,
+      "WARN_lower": null,
+      "WARN_upper": 270.0,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "GC_Content",
+      "FINAL_lower": 51.05,
+      "FINAL_upper": 52.15,
+      "WARN_lower": 51.42,
+      "WARN_upper": 52.08,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "Completeness_Specific",
+      "FINAL_lower": 97.0,
+      "FINAL_upper": null,
+      "WARN_lower": 99.0,
+      "WARN_upper": null,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "Contamination",
+      "FINAL_lower": null,
+      "FINAL_upper": 3.0,
+      "WARN_lower": null,
+      "WARN_upper": 1.0,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "Total_Coding_Sequences",
+      "FINAL_lower": 1900.0,
+      "FINAL_upper": 2500.0,
+      "WARN_lower": 1900.0,
+      "WARN_upper": 2200.0,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    },
+    {
+      "metric": "Genome_Size",
+      "FINAL_lower": 2000000.0,
+      "FINAL_upper": 2400000.0,
+      "WARN_lower": 2000000.0,
+      "WARN_upper": 2300000.0,
+      "all_final_match_website_v1_0": true,
+      "all_operational_warn_match_website_v1_0": true
+    }
+  ],
+  "creation_commit": "f0e2f39bc75a9c2dd19d9bee5017355f9263b56a",
+  "creation_commit_date": "13 May 2026",
+  "creation_intent": "Copy v1.0, change ONLY the genome-size upper limit from 2.4 Mb to 2.3 Mb; all other thresholds inherit v1.0.",
+  "repair_basis": "Use the latest canonical native baseline and its actual native warnings, with only the already documented 2.3 Mb genome-size upper pin. Carry its matching summary, flags, reference metadata, cached metrics and plots together. This repairs a stale hybrid pipeline artifact rather than inventing thresholds.",
+  "source_files": [
+    {
+      "name": "Neisseria_meningitidis_assembly_stats.csv.gz",
+      "bytes": 841281,
+      "sha256": "7b805ec58c0d41dc3fd05c7ba577d4ccc9671bdec05ff74d3b1691de2e62a249",
+      "mtime_utc": "2026-05-20T10:02:40+00:00"
+    },
+    {
+      "name": "Neisseria_meningitidis_atb_fail.csv.gz",
+      "bytes": 51554,
+      "sha256": "1d12a50c797107e8357aecc5ab1b1c19dd2c0eff77d2bff7072fdf14b8dc86dd",
+      "mtime_utc": "2026-05-20T10:14:01+00:00"
+    },
+    {
+      "name": "Neisseria_meningitidis_atb_pass.csv.gz",
+      "bytes": 743287,
+      "sha256": "4f14b4d53ca1d65d37323cd43021885c5a288a15f74eba28fe938fa168abad00",
+      "mtime_utc": "2026-05-20T10:14:01+00:00"
+    },
+    {
+      "name": "Neisseria_meningitidis_atb_warn.csv.gz",
+      "bytes": 85974,
+      "sha256": "143f3418fa916495214168fc3aec251a0937a0966222914a460750d8e6114b03",
+      "mtime_utc": "2026-05-20T10:14:01+00:00"
+    },
+    {
+      "name": "Neisseria_meningitidis_metrics.csv",
+      "bytes": 328,
+      "sha256": "c3af24d503100b8394a17b72ad6112d6bcf1640ddf25d50ec6c1a95a2dddae2b",
+      "mtime_utc": "2026-05-20T10:13:58+00:00"
+    },
+    {
+      "name": "Neisseria_meningitidis_refseq_genomes.csv.xz",
+      "bytes": 4472,
+      "sha256": "72cd8fb80abf8da5c420994c98c60b2e1c7b12000306afa1a79bfb076206fd1d",
+      "mtime_utc": "2026-05-20T10:13:58+00:00"
+    },
+    {
+      "name": "flags.json",
+      "bytes": 1978,
+      "sha256": "4f0176a3f8b287b1282eb0d1b2e3caf308e512e53d0939e810baaff2fe3302a3",
+      "mtime_utc": "2026-05-20T10:13:58+00:00"
+    },
+    {
+      "name": "selected_summary.csv",
+      "bytes": 842,
+      "sha256": "dc5466dab2a817e87f6aa6bd95f7fe477786b56c05d3efc8783c9281282a2263",
+      "mtime_utc": "2026-05-20T10:13:58+00:00"
+    },
+    {
+      "name": "summary.csv",
+      "bytes": 2986,
+      "sha256": "30e09b0f416e78330daad50899740d3dfd2f16b817bc2c523da047952ac99d41",
+      "mtime_utc": "2026-05-20T10:13:58+00:00"
+    }
+  ],
+  "classification": {
+    "baseline_rows_compared": 35816,
+    "baseline_field_mismatches": 0,
+    "baseline_counts": {
+      "pass": 30660,
+      "fail": 1877,
+      "warn": 3279
+    },
+    "corrected_counts": {
+      "pass": 30660,
+      "fail": 1916,
+      "warn": 3240
+    },
+    "transitions": {
+      "pass -> pass": 30660,
+      "fail -> fail": 1877,
+      "warn -> warn": 3240,
+      "warn -> fail": 39
+    }
+  }
+}

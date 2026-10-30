@@ -259,3 +259,7 @@ cython_debug/
 
 # Auditable source for the corrected H. haemolyticus expert pin.
 !public/static/species/Haemophilus_haemolyticus/qualibact-v1.1/Haemophilus_haemolyticus_metrics.csv
+
+# Native source criteria for the repaired N. meningitidis warning export.
+!public/static/species/Neisseria_meningitidis/qualibact-v1.1/Neisseria_meningitidis_metrics.csv
+!public/static/species/Neisseria_meningitidis/qualibact-v1.1/flags.json

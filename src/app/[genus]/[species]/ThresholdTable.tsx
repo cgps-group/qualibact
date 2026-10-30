@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { formatThreshold } from '@/lib/metric-display';
 
 export interface ThresholdRow {
   metric: string;
@@ -25,31 +26,6 @@ export interface ThresholdTableProps {
   /** External (third-party) schemes ship published integer cutoffs and have no
    *  pre-rounding raw bound or WARN band — the mode toggle is meaningless. */
   hideModeToggle?: boolean;
-}
-
-function fmt(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return '-';
-  if (Math.abs(v) >= 1000) return v.toLocaleString('en', { maximumFractionDigits: 0 });
-  return v.toLocaleString('en', { maximumFractionDigits: 4 });
-}
-
-/**
- * GC_Content (and any other 1-decimal-friendly percentage metric)
- * gets aggressive directional rounding in the Rounded view:
- * - lower bounds floor to 1 decimal (open the door slightly wider)
- * - upper bounds ceil to 1 decimal (open the door slightly wider)
- * The engine emits GC at inconsistent precision (38.68 vs 38.8 vs 39.17),
- * which looked jagged on the published table.
- */
-function gcRound(v: number | null | undefined, side: 'lower' | 'upper'): number | null | undefined {
-  if (v === null || v === undefined || !Number.isFinite(v)) return v;
-  return side === 'lower'
-    ? Math.floor(v * 10) / 10
-    : Math.ceil(v * 10) / 10;
-}
-
-function isGcRoundable(metric: string, mode: 'rounded' | 'raw'): boolean {
-  return mode === 'rounded' && metric === 'GC_Content';
 }
 
 export default function ThresholdTable({ rows, summaryHasMy, metricsURL, hideModeToggle }: ThresholdTableProps) {
@@ -89,7 +65,7 @@ export default function ThresholdTable({ rows, summaryHasMy, metricsURL, hideMod
 
       {!hideModeToggle && !summaryHasMy && (
         <div className="mb-4 rounded border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
-          The reference data for this scheme is from an older engine run and doesn&apos;t carry the values needed to compute the warn / fail bands below. The engine is being re-run; bands will populate once that lands.
+          Pre-rounding bounds are unavailable for this scheme. The published bounds remain available in the table and CSV download.
         </div>
       )}
 
@@ -106,23 +82,17 @@ export default function ThresholdTable({ rows, summaryHasMy, metricsURL, hideMod
           </thead>
           <tbody>
             {rows.map((row, i) => {
-              let failLow = mode === 'rounded' ? row.rounded_lower : row.raw_lower;
-              let failHigh = mode === 'rounded' ? row.rounded_upper : row.raw_upper;
-              let warnLow = mode === 'rounded' ? row.warn_lower : row.raw_warn_lower;
-              let warnHigh = mode === 'rounded' ? row.warn_upper : row.raw_warn_upper;
-              if (isGcRoundable(row.metric, mode)) {
-                failLow = gcRound(failLow, 'lower') ?? null;
-                warnLow = gcRound(warnLow, 'lower') ?? null;
-                warnHigh = gcRound(warnHigh, 'upper') ?? null;
-                failHigh = gcRound(failHigh, 'upper') ?? null;
-              }
+              const failLow = mode === 'rounded' ? row.rounded_lower : row.raw_lower;
+              const failHigh = mode === 'rounded' ? row.rounded_upper : row.raw_upper;
+              const warnLow = mode === 'rounded' ? row.warn_lower : row.raw_warn_lower;
+              const warnHigh = mode === 'rounded' ? row.warn_upper : row.raw_warn_upper;
               return (
                 <tr key={row.metric} className={i % 2 === 0 ? '' : 'bg-neutral-50 dark:bg-neutral-800/50'}>
                   <td className="py-2 pr-4 font-mono">{row.metric}</td>
-                  <td className="py-2 px-4 text-right font-mono text-red-700 dark:text-red-300">{fmt(failLow)}</td>
-                  <td className="py-2 px-4 text-right font-mono text-amber-700 dark:text-amber-300">{fmt(warnLow)}</td>
-                  <td className="py-2 px-4 text-right font-mono text-amber-700 dark:text-amber-300">{fmt(warnHigh)}</td>
-                  <td className="py-2 pl-4 text-right font-mono text-red-700 dark:text-red-300">{fmt(failHigh)}</td>
+                  <td className="py-2 px-4 text-right font-mono text-red-700 dark:text-red-300">{formatThreshold(failLow)}</td>
+                  <td className="py-2 px-4 text-right font-mono text-amber-700 dark:text-amber-300">{formatThreshold(warnLow)}</td>
+                  <td className="py-2 px-4 text-right font-mono text-amber-700 dark:text-amber-300">{formatThreshold(warnHigh)}</td>
+                  <td className="py-2 pl-4 text-right font-mono text-red-700 dark:text-red-300">{formatThreshold(failHigh)}</td>
                 </tr>
               );
             })}
@@ -131,9 +101,12 @@ export default function ThresholdTable({ rows, summaryHasMy, metricsURL, hideMod
       </div>
 
       <p className="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
-        <strong>How to read this:</strong> a value between the two warn columns is typical for this species and
-        passes QC. A value between a warn column and the corresponding fail column is borderline &mdash; worth a manual
-        look but not an outright failure. A value outside the fail columns is unusual enough to fail QC.
+        <strong>How to read this:</strong>{' '}
+        {hideModeToggle ? (
+          <>This scheme provides failure limits only. A value outside a published failure limit fails that criterion; blank warning columns mean that no separate warning band is defined.</>
+        ) : (
+          <>A value outside a failure limit fails QC. Within the failure limits, values beyond a warning limit are borderline and worth a manual look; values within the warning limits pass that criterion. A dash means that no bound is defined on that side.</>
+        )}
       </p>
 
       {metricsURL && (

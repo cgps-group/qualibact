@@ -44,30 +44,6 @@ METRIC_ALIASES = {
     "number": "no_of_contigs",
 }
 
-# Buffer applied locally when {Species}_metrics.csv is still 2-bound
-# (legacy pipeline shape) — mirrors scripts/regenerate_thresholds.py so
-# WARN bounds in manifest.json stay populated until the engine re-runs
-# emit the 4-bound shape natively.
-WARN_BUFFER_PCT = 0.10
-PCT_METRICS = {"GC_Content", "Completeness_Specific", "Contamination"}
-
-
-def _warn_from_fail_lower(metric: str, fail: float | None) -> float | None:
-    if fail is None:
-        return None
-    if metric in PCT_METRICS:
-        return fail + 1.0
-    return fail * (1.0 + WARN_BUFFER_PCT)
-
-
-def _warn_from_fail_upper(metric: str, fail: float | None) -> float | None:
-    if fail is None:
-        return None
-    if metric in PCT_METRICS:
-        return fail - 1.0
-    return fail * (1.0 - WARN_BUFFER_PCT)
-
-
 def _num(s) -> float | None:
     if s is None:
         return None
@@ -105,8 +81,9 @@ def read_metrics_csv(scheme_dir: Path, species: str) -> dict[str, dict]:
     - **Legacy 2-bound** (anything pre-2026 imported via sync_public.py or
       the older import path): only ``lower_bounds`` / ``upper_bounds``.
       ``final_lower``/``final_upper`` come from this file; ``warn_lower``/
-      ``warn_upper`` are filled in by the caller from summary.csv FINAL_*
-      (or computed via the buffer rule). ``source`` defaults to ``computed``.
+      ``warn_upper`` may be filled from actual summary.csv WARN_* columns.
+      Missing warning data remain unavailable; failure limits do not define
+      warning percentiles. ``source`` defaults to ``computed``.
 
     Returns ``{metric: {final_lower, final_upper, warn_lower, warn_upper, source}}``
     with ``None`` for absent bounds. Empty dict if no metrics.csv exists.
@@ -188,6 +165,7 @@ def read_metrics_csv(scheme_dir: Path, species: str) -> dict[str, dict]:
             "warn_lower": warn_l,
             "warn_upper": warn_u,
             "source": source,
+            "native_warning_columns": i_warn_l >= 0 and i_warn_u >= 0,
         }
     return out
 
@@ -210,6 +188,8 @@ def read_summary_csv(scheme_dir: Path) -> dict[str, dict[str, float | None]]:
     i_metric = ix("metric")
     i_ml_l = ix("FINAL_LOWER")
     i_ml_u = ix("FINAL_UPPER")
+    i_warn_l = ix("WARN_LOWER")
+    i_warn_u = ix("WARN_UPPER")
     i_lb = ix("lower_bound")
     i_ub = ix("upper_bound")
     i_rs_lb = ix("refseq_lower_bound")
@@ -227,6 +207,8 @@ def read_summary_csv(scheme_dir: Path) -> dict[str, dict[str, float | None]]:
         out[metric] = {
             "ml_lower": _normalise_gc(metric, _num(cells[i_ml_l]) if i_ml_l >= 0 and i_ml_l < len(cells) else None),
             "ml_upper": _normalise_gc(metric, _num(cells[i_ml_u]) if i_ml_u >= 0 and i_ml_u < len(cells) else None),
+            "warn_lower": _normalise_gc(metric, _num(cells[i_warn_l]) if i_warn_l >= 0 and i_warn_l < len(cells) else None),
+            "warn_upper": _normalise_gc(metric, _num(cells[i_warn_u]) if i_warn_u >= 0 and i_warn_u < len(cells) else None),
             "auto_lower": _normalise_gc(metric, _num(cells[i_lb]) if i_lb >= 0 and i_lb < len(cells) else None),
             "auto_upper": _normalise_gc(metric, _num(cells[i_ub]) if i_ub >= 0 and i_ub < len(cells) else None),
             "refseq_lower": _normalise_gc(metric, _num(cells[i_rs_lb]) if i_rs_lb >= 0 and i_rs_lb < len(cells) else None),
@@ -402,8 +384,8 @@ def build_manifest(
       canonical engine naming.
     - `warn_lower` / `warn_upper` are the WARN tier. Sourced from the
       engine's WARN_lower/WARN_upper when the metrics.csv is the new
-      4-bound shape; otherwise from summary.csv FINAL_LOWER/UPPER; as
-      a last resort, computed via the ±10% / ±1pp buffer.
+      4-bound shape; otherwise only from actual summary.csv WARN_LOWER/UPPER.
+      Missing warnings remain absent, rather than being invented from FAIL.
     - `source` is `pinned` when the engine flagged the value as a
       manual override, else `computed`.
 
@@ -441,23 +423,19 @@ def build_manifest(
         eng = summary_bounds.get(metric, {})
         mc_row = mc.get(metric, {})
 
-        # WARN tier resolution: engine column > summary.csv FINAL_* >
-        # locally-computed buffer.
+        # WARN tier resolution: native metrics column > actual summary WARN_*.
+        # FINAL/ML bounds and arbitrary buffers are not warning percentiles.
         warn_l = mc_row.get("warn_lower")
         warn_u = mc_row.get("warn_upper")
         source = mc_row.get("source", "computed")
         # Third-party / external schemes (e.g. enterobase-v2.3) are
         # single-FAIL — leave WARN blank verbatim, don't synthesise from
         # the engine summary or a buffer.
-        if source != "external":
+        if source != "external" and not mc_row.get("native_warning_columns", False):
             if warn_l is None:
-                warn_l = eng.get("ml_lower")
+                warn_l = eng.get("warn_lower")
             if warn_u is None:
-                warn_u = eng.get("ml_upper")
-            if warn_l is None and pub["lower"] is not None:
-                warn_l = _warn_from_fail_lower(metric, pub["lower"])
-            if warn_u is None and pub["upper"] is not None:
-                warn_u = _warn_from_fail_upper(metric, pub["upper"])
+                warn_u = eng.get("warn_upper")
 
         threshold_rows.append({
             "metric": metric,

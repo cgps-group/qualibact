@@ -30,7 +30,7 @@ overrides:
     scheme:  qualibact-v1.1
     metric:  Genome_Size
     upper:   2300000
-    reason:  "Nov 2025 expert survey — INSA Lisboa N. meningitidis subgroup advised that their reference dataset is consistently below 2.3 Mb and a tighter upper bound is appropriate to flag potentially contaminated or chimeric assemblies. The +10% regen buffer would push this to 2.67 Mb; lock at the requested 2.3 Mb."
+    reason:  "Expert review set the genome-size upper failure limit at 2.3 Mb. Other failure limits and the native warning limits are inherited from qualibact-v1.0."
 
   # The five Neisseria commensal entries below all came from the same
   # respondent group (N. gonorrhoeae subgroup, citing the
